@@ -51,16 +51,40 @@ export default function ToolbarPlugin() {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
-  const activeBlock = useActiveBlock();
+  const [activeBlock, setActiveBlock] = useState<string | null>(null);
 
   const $updateToolbar = useCallback(() => {
-    const selection = $getSelection();
-    if ($isRangeSelection(selection)) {
-      // Update text format
-      setIsBold(selection.hasFormat('bold'));
-      setIsItalic(selection.hasFormat('italic'));
-      setIsUnderline(selection.hasFormat('underline'));
-      setIsStrikethrough(selection.hasFormat('strikethrough'));
+    try {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        // Update text format
+        setIsBold(selection.hasFormat('bold'));
+        setIsItalic(selection.hasFormat('italic'));
+        setIsUnderline(selection.hasFormat('underline'));
+        setIsStrikethrough(selection.hasFormat('strikethrough'));
+
+        // Update active block
+        try {
+          const anchorNode = selection.anchor.getNode();
+          // Get top-level block element
+          const element = anchorNode.getTopLevelElement();
+          
+          if (element) {
+            if ($isHeadingNode(element)) {
+              setActiveBlock(element.getTag());
+            } else {
+              setActiveBlock(element.getType());
+            }
+          } else {
+            setActiveBlock(null);
+          }
+        } catch (error) {
+          console.error('Error getting active block:', error);
+          setActiveBlock(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error in updateToolbar:', error);
     }
   }, []);
 
@@ -99,27 +123,22 @@ export default function ToolbarPlugin() {
   }, [editor, $updateToolbar]);
 
   function toggleBlock(type: 'h1' | 'h2' | 'h3' | 'quote') {
-    const selection = $getSelection();
+    editor.update(() => {
+      const selection = $getSelection();
+      if (!selection) return;
 
-    if (activeBlock === type) {
-      return $setBlocksType(selection, () => $createParagraphNode());
-    }
-
-    if (type === 'h1') {
-      return $setBlocksType(selection, () => $createHeadingNode('h1'));
-    }
-
-    if (type === 'h2') {
-      return $setBlocksType(selection, () => $createHeadingNode('h2'));
-    }
-
-    if (type === 'h3') {
-      return $setBlocksType(selection, () => $createHeadingNode('h3'));
-    }
-
-    if (type === 'quote') {
-      return $setBlocksType(selection, () => $createQuoteNode());
-    }
+      if (activeBlock === type) {
+        $setBlocksType(selection, () => $createParagraphNode());
+      } else if (type === 'h1') {
+        $setBlocksType(selection, () => $createHeadingNode('h1'));
+      } else if (type === 'h2') {
+        $setBlocksType(selection, () => $createHeadingNode('h2'));
+      } else if (type === 'h3') {
+        $setBlocksType(selection, () => $createHeadingNode('h3'));
+      } else if (type === 'quote') {
+        $setBlocksType(selection, () => $createQuoteNode());
+      }
+    });
   }
 
   return (
@@ -146,7 +165,7 @@ export default function ToolbarPlugin() {
       </button>
       <Divider />
       <button
-        onClick={() => editor.update(() => toggleBlock('h1'))}
+        onClick={() => toggleBlock('h1')}
         data-active={activeBlock === 'h1' ? '' : undefined}
         className={
           'toolbar-item spaced ' + (activeBlock === 'h1' ? 'active' : '')
@@ -155,7 +174,7 @@ export default function ToolbarPlugin() {
         <i className="format h1" />
       </button>
       <button
-        onClick={() => editor.update(() => toggleBlock('h2'))}
+        onClick={() => toggleBlock('h2')}
         data-active={activeBlock === 'h2' ? '' : undefined}
         className={
           'toolbar-item spaced ' + (activeBlock === 'h2' ? 'active' : '')
@@ -164,7 +183,7 @@ export default function ToolbarPlugin() {
         <i className="format h2" />
       </button>
       <button
-        onClick={() => editor.update(() => toggleBlock('h3'))}
+        onClick={() => toggleBlock('h3')}
         data-active={activeBlock === 'h3' ? '' : undefined}
         className={
           'toolbar-item spaced ' + (activeBlock === 'h3' ? 'active' : '')
@@ -248,43 +267,4 @@ export default function ToolbarPlugin() {
       </button>{' '}
     </div>
   );
-}
-
-function useActiveBlock() {
-  const [editor] = useLexicalComposerContext();
-
-  const subscribe = useCallback(
-    (onStoreChange: () => void) => {
-      return editor.registerUpdateListener(onStoreChange);
-    },
-    [editor],
-  );
-
-  const getSnapshot = useCallback(() => {
-    return editor.getEditorState().read(() => {
-      const selection = $getSelection();
-      if (!$isRangeSelection(selection)) return null;
-
-      const anchor = selection.anchor.getNode();
-      let element =
-        anchor.getKey() === 'root'
-          ? anchor
-          : $findMatchingParent(anchor, (e) => {
-              const parent = e.getParent();
-              return parent !== null && $isRootOrShadowRoot(parent);
-            });
-
-      if (element === null) {
-        element = anchor.getTopLevelElementOrThrow();
-      }
-
-      if ($isHeadingNode(element)) {
-        return element.getTag();
-      }
-
-      return element.getType();
-    });
-  }, [editor]);
-
-  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }
