@@ -10,6 +10,20 @@ declare type RoomAccesses = Record<string, AccessType>;
 
 declare type UserType = "creator" | "editor" | "viewer";
 
+
+declare type RoomDocumentData = {
+  createdAt: string;
+  defaultAccesses: string[];
+  id: string
+  lastAccessedAt: string;
+  metadata: RoomMetadata;
+  type: string;
+  usersAccesses: RoomAccesses;
+}
+declare type RoomDocument = {
+  data: RoomDocumentData[]
+}
+
 declare type RoomMetadata = {
   creatorId: string;
   email: string;
