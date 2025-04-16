@@ -19,7 +19,6 @@ import { Input } from "./ui/input";
 import UserTypeSelector from "./UserTypeSelector";
 import { updateDocumentAccess } from "@/lib/actions/room.actions";
 import Collaborator from "./Collaborator";
-import { currentUser } from "@clerk/nextjs/server";
 
 const ShareModal = ({ roomId, collaborators, creatorId, currentUserType }: ShareDocumentDialogProps) => {
     const user = useSelf()

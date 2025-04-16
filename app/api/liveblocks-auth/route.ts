@@ -1,7 +1,6 @@
 import { liveblocks } from "@/lib/liveblocks";
-import { getRandomColor, getUserColor } from "@/lib/utils";
+import { getUserColor } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
-import { Liveblocks } from "@liveblocks/node";
 import { redirect } from "next/navigation";
 
 export async function POST(request: Request) {
