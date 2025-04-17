@@ -17,6 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { InboxNotificationData } from "@liveblocks/client";
 
 export const Notifications = () => {
   const { inboxNotifications } = useInboxNotifications();
@@ -56,7 +57,7 @@ export const Notifications = () => {
             )}
 
             {unreadNotifications.length > 0 &&
-              unreadNotifications.map((inboxNotification: any) => (
+              unreadNotifications.map((inboxNotification: InboxNotificationData) => (
                 <InboxNotification
                   key={inboxNotification.id}
                   inboxNotification={inboxNotification}

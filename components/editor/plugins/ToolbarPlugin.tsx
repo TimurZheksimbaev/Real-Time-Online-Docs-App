@@ -9,7 +9,7 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { mergeRegister } from '@lexical/utils';
 import {
   $createParagraphNode,
-  $isRootOrShadowRoot,
+  // $isRootOrShadowRoot,
   $getSelection,
   $isRangeSelection,
   CAN_REDO_COMMAND,
@@ -26,14 +26,14 @@ import {
   $isHeadingNode,
 } from '@lexical/rich-text';
 import { $setBlocksType } from '@lexical/selection';
-import { $findMatchingParent } from '@lexical/utils';
+// import { $findMatchingParent } from '@lexical/utils';
 import React from 'react';
 import {
   useCallback,
   useEffect,
   useRef,
   useState,
-  useSyncExternalStore,
+  // useSyncExternalStore,
 } from 'react';
 
 const LowPriority = 1;
