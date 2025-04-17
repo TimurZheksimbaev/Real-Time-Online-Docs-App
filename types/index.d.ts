@@ -4,9 +4,11 @@ declare type SearchParamProps = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-declare type PageProps = {
-  params: { [key: string]: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+declare type DocumentPageProps = {
+  params: {
+    id: string;
+  };
+  searchParams: { [key: string]: string | string[] | undefined };
 };
 
 declare type AccessType = ["room:write"] | ["room:read", "room:presence:write"];

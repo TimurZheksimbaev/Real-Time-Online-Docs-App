@@ -15,13 +15,9 @@ const Home = async () => {
   const clerkUser = await currentUser();
   if (!clerkUser) redirect("/sign-in");
 
-  const roomDocuments = await getDocuments(
+  const roomDocuments: RoomDocument = await getDocuments(
     clerkUser.emailAddresses[0].emailAddress
   );
-
-  if (!roomDocuments) {
-    throw new Error("Failed to fetch documents.");
-  }
 
   return (
     <main className="home-container">

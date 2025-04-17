@@ -4,7 +4,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
 
-  typeScript: {
+  typescript: {
     ignoreBuildErrors: true,
   },
 
